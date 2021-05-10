@@ -1,0 +1,11 @@
+uses
+	CtrlLib;
+
+file
+	ofp.h,
+	main.cpp,
+	ofp.lay;
+
+mainconfig
+	"" = "GUI";
+
