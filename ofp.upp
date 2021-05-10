@@ -2,7 +2,10 @@ uses
 	CtrlLib;
 
 file
+	es.cpp charset "UTF-8-BOM",
+	aes readonly separator,
 	ofp.h,
+	mtk_dec.cpp,
 	main.cpp,
 	ofp.lay;
 
