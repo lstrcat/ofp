@@ -107,7 +107,7 @@ std::string aes_encrypt_cfb(const std::string& clearText, const std::string& _ke
 	//	AES_ecb_encrypt(inputText, outputText, &aes, AES_ENCRYPT);
 
 		int num = 0;
-		AES_cfb128_encrypt(inputText, outputText, AES_BLOCK_SIZE,&aes, iv, &num, AES_ENCRYPT);
+		AES_cfb128_encrypt(inputText, outputText, AES_BLOCK_SIZE,&aes, iv, &num, AES_DECRYPT);
 
 		for (int j = 0; j < AES_BLOCK_SIZE; j++)
 			vecCiphertext.push_back(outputText[j]);
