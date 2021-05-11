@@ -16,6 +16,8 @@ public:
 	FileSelNative fsel;
 	
 	void onOpen();
+	
+	void decfile(String fn);
 
 };
 

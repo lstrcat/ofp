@@ -144,7 +144,7 @@ String cleancstring(String input)
     return input;
 }
 
-void decfile(String fn)
+void ofp::decfile(String fn)
 {
 	FileIn in(fn);
 	if(in)
@@ -177,6 +177,10 @@ void decfile(String fn)
 			String cpu(pInfo->cpu);
 			String flashtype(pInfo->flashtype);
 						
+			e_prjname.SetText(prjname);
+			e_prjinfo.SetText(prjinfo);
+			e_cpu.SetText(cpu);
+			e_flashtype.SetText(flashtype);
 		}
 	}
 }

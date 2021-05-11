@@ -1,5 +1,9 @@
 LAYOUT(ofpLayout, 616, 332)
 	ITEM(Button, btn, SetLabel(t_("...")).LeftPosZ(524, 56).TopPosZ(20, 19))
 	ITEM(EditString, line, WantFocus(false).LeftPosZ(12, 508).TopPosZ(20, 19))
+	ITEM(EditString, e_cpu, LeftPosZ(10, 64).TopPosZ(100, 19))
+	ITEM(EditString, e_flashtype, LeftPosZ(10, 64).TopPosZ(120, 19))
+	ITEM(EditString, e_prjinfo, LeftPosZ(10, 64).TopPosZ(140, 19))
+	ITEM(EditString, e_prjname, LeftPosZ(10, 64).TopPosZ(160, 19))
 END_LAYOUT
 

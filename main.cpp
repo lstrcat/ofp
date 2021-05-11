@@ -7,6 +7,11 @@ ofp::ofp()
 	CtrlLayout(*this, t_("Window title"));
 	
 	line.NullText(t_("Choose Oppo/Realme OFP file"));
+	e_prjname.NullText("projname");
+	e_prjinfo.NullText("projinfo");
+	e_cpu.NullText("cpu");
+	e_flashtype.NullText("flash type");
+	
 	btn <<= THISBACK(onOpen);
 }
 
