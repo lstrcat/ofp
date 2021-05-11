@@ -10,7 +10,13 @@ using namespace Upp;
 
 class ofp : public WithofpLayout<TopWindow> {
 public:
+	typedef ofp CLASSNAME;
 	ofp();
+	
+	FileSelNative fsel;
+	
+	void onOpen();
+
 };
 
 #endif

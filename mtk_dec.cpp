@@ -60,7 +60,7 @@ String mtk_shuffle2(String key, int keylength, String input, int inputlength)
 	return ~b;
 }
 
-void getkey(int index,String& aeskey, String& aesiv)
+void getkey(int index,std::string& aeskey, std::string& aesiv)
 {
 	String obskey = String(&keytables[index][0],16);
 //	DUMPHEX(obskey);
@@ -86,35 +86,47 @@ def brutekey(rf):
     exit(0)
 */
 
-void brutekey(String encdata)
+bool brutekey(std::string encdata, std::string& sKey, std::string& sIv)
 {
-	unsigned char data[16] = {
-		0x2E, 0xE0, 0xF8, 0x03, 0xBF, 0x09, 0x5A, 0xD0, 0x7F, 0x25, 0xD5, 0x99, 0xD9, 0xDA, 0x1F, 0x87
-	};
-	
 	int n = sizeof(keytables);
 
 	for(int i=0; i<8; i++)
 	{
-		String key,iv;
-		getkey(i,key,iv);
+		getkey(i,sKey,sIv);
 
 		
-		std::string sIn((char*)&data,16);
-		LOGHEXDUMP(sIn.c_str(),16);
+		LOGHEXDUMP(encdata.c_str(),16);
 		
-		std::string sKey(key);
-		std::string sIv(iv);
-		std::string sOut = aes_encrypt_cfb(sIn,sKey,sIv);
+		std::string sOut = aes_encrypt_cfb(encdata,sKey,sIv);
 
 		String s = sOut;
 		if(s.Left(3) == "MMM")
 		{
-		DUMP(key);
-		DUMP(iv);
-			break;
+			DUMP(sKey.c_str());
+			DUMP(sIv.c_str());
+			return true;
 		}    		
 	}
 	
 	RLOG("Unknown key. Please ask the author for support :)");
+	return false;
+}
+
+void decfile(String fn)
+{
+	FileIn in(fn);
+	if(in)
+	{
+		int64 filesize = in.GetSize();
+		while(!in.IsEof())
+		{
+			char b[16] = {0};
+			in.Get(b,16);
+			
+			std::string aeskey,aesiv;
+			if(!brutekey(std::string(b,16),aeskey,aesiv))
+				break;
+			
+		}
+	}
 }
