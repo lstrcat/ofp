@@ -204,13 +204,68 @@ void ofp::decfile(String fn)
 				LOGHEXDUMP(data,0x60);
 				
 				grid.Add(name,filename,(int64)pHdr2->start,(int64)pHdr2->length,(int64)pHdr2->enclength);
+			}	
+		}
+	}
+}
+
+void ofp::extracfile(String fn, String folder)
+{	
+	FileIn in(fn);
+	if(in)
+	{
+		char* hdrkey = "geyixue";
+		int64 filesize = in.GetSize();
+		int hdrlength = 0x6c;
+		
+		while(!in.IsEof())
+		{
+			char b[16] = {0};
+			in.Get(b,16);
 			
+			std::string aeskey,aesiv;
+			if(!brutekey(std::string(b,16),aeskey,aesiv))
+				break;
+			
+			in.Seek(filesize - hdrlength);
+			
+			char b_hdr[0x6c] = {0};
+			in.Get(b_hdr,hdrlength);
+			LOGHEXDUMP(b_hdr,hdrlength);
+			
+			String hdr = mtk_shuffle(hdrkey, strlen(hdrkey), b_hdr, hdrlength);
+			Info1* pInfo = (Info1*)~hdr;
+			LOGHEXDUMP(~hdr,hdrlength);
+			
+			String prjname(pInfo->prjname);	
+			String prjinfo(pInfo->prjinfo);
+			String cpu(pInfo->cpu);
+			String flashtype(pInfo->flashtype);
+			
+			int hdr2length=pInfo->hdr2entries*0x60;
+			in.Seek(filesize-hdr2length-hdrlength);
+			
+			StringBuffer b_hdr2;
+			b_hdr2.SetLength(hdr2length);
+			in.Get(b_hdr2,hdr2length);
+			String hdr2 = mtk_shuffle(hdrkey, strlen(hdrkey), b_hdr2, hdr2length);
+			
+			for(int i=0; i<hdr2.GetLength(); i+=0x60)
+			{
+				String data(~hdr2+i,0x60);
+				Hdr2* pHdr2 = (Hdr2*)~data;
+				
+				String name(pHdr2->name);
+				String filename(pHdr2->filename);
+				
 				FileOut out;
 				if(!out.IsOpen())
 				{
-					String path = "D:/test/" + filename;
+					String path = AppendFileName(folder , filename);
 					RealizePath(path);
 					out.Open(path);
+					
+					ShowStatus(path);
 				}
 				if(pHdr2->enclength)
 				{
@@ -224,7 +279,7 @@ void ofp::decfile(String fn)
 						b.Cat(0,n);
 					}
 					std::string encData(~b,b.GetLength());
-					LOGHEXDUMP(~b,b.GetLength());
+				//	LOGHEXDUMP(~b,b.GetLength());
 					String sOut = aes_encrypt_cfb(encData,aeskey,aesiv);
 					{
 						// 移除加密前的补位数据
@@ -251,6 +306,8 @@ void ofp::decfile(String fn)
 				}
 				out.Close();
 			}
+			ShowStatus(t_("write success!"));
 		}
-	}
+	}	
 }
+
