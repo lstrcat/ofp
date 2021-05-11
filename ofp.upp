@@ -1,5 +1,6 @@
 uses
-	CtrlLib;
+	CtrlLib,
+	GridCtrl;
 
 file
 	es.cpp charset "UTF-8-BOM",

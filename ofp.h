@@ -2,7 +2,7 @@
 #define _ofp_ofp_h
 
 #include <CtrlLib/CtrlLib.h>
-
+#include <GridCtrl/GridCtrl.h>
 using namespace Upp;
 
 #define LAYOUTFILE <ofp/ofp.lay>

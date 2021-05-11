@@ -12,6 +12,12 @@ ofp::ofp()
 	e_cpu.NullText("cpu");
 	e_flashtype.NullText("flash type");
 	
+	grid.AddColumn(t_("Name"));
+	grid.AddColumn(t_("FileName"));
+	grid.AddColumn(t_("Start"));
+	grid.AddColumn(t_("Length"));
+	grid.AddColumn(t_("Enc Length"));
+	
 	btn <<= THISBACK(onOpen);
 }
 

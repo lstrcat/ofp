@@ -50,6 +50,14 @@ struct Info1{
 	word crc;
 };
 
+struct Hdr2{
+	char name[32];
+	qword start;
+	qword length;
+	qword enclength;
+	char filename[32];
+	qword crc;
+};
 
 String mtk_shuffle(String key, int keylength, String input, int inputlength)
 {
@@ -137,13 +145,6 @@ bool brutekey(std::string encdata, std::string& sKey, std::string& sIv)
 	return false;
 }
 
-String cleancstring(String input)
-{
-	DUMPHEX(input);
-	input.Replace("\00","");
-    return input;
-}
-
 void ofp::decfile(String fn)
 {
 	FileIn in(fn);
@@ -176,11 +177,33 @@ void ofp::decfile(String fn)
 			String prjinfo(pInfo->prjinfo);
 			String cpu(pInfo->cpu);
 			String flashtype(pInfo->flashtype);
+			
 						
 			e_prjname.SetText(prjname);
 			e_prjinfo.SetText(prjinfo);
 			e_cpu.SetText(cpu);
 			e_flashtype.SetText(flashtype);
+			
+			
+			int hdr2length=pInfo->hdr2entries*0x60;
+			in.Seek(filesize-hdr2length-hdrlength);
+			
+			StringBuffer b_hdr2;
+			b_hdr2.SetLength(hdr2length);
+			in.Get(b_hdr2,hdr2length);
+			String hdr2 = mtk_shuffle(hdrkey, strlen(hdrkey), b_hdr2, hdr2length);
+			
+			for(int i=0; i<hdr2.GetLength(); i+=0x60)
+			{
+				String data(~hdr2+i,0x60);
+				Hdr2* pHdr2 = (Hdr2*)~data;
+				
+				String name(pHdr2->name);
+				String filename(pHdr2->filename);
+				LOG(name + " " + filename);
+				
+				grid.Add(name,filename,(int64)pHdr2->start,(int64)pHdr2->length,(int64)pHdr2->enclength);
+			}
 		}
 	}
 }
