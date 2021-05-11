@@ -221,12 +221,18 @@ void ofp::decfile(String fn)
 					if(pHdr2->enclength % 16 != 0)
 					{
 						int n = 16-(pHdr2->enclength % 16);
-						while(n--)
-							b.Cat(0);
+						b.Cat(0,n);
 					}
 					std::string encData(~b,b.GetLength());
-					std::string sOut = aes_encrypt_cfb(encData,aeskey,aesiv);
-					out.Put(sOut.c_str(),sOut.length());
+					LOGHEXDUMP(~b,b.GetLength());
+					String sOut = aes_encrypt_cfb(encData,aeskey,aesiv);
+					{
+						// 移除加密前的补位数据
+						
+						int n = 16-(pHdr2->enclength % 16);
+						sOut.TrimLast(n);
+					}
+					out.Put(sOut);
 					int64 len = pHdr2->length;
 					len -= pHdr2->enclength;
 					

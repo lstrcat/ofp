@@ -113,6 +113,7 @@ std::string aes_encrypt_cfb(const std::string& clearText, const std::string& _ke
 			vecCiphertext.push_back(outputText[j]);
 	}
 
+	/*
 	int n = clearText.length() % AES_BLOCK_SIZE;
 
 	if (n != 0)
@@ -139,7 +140,7 @@ std::string aes_encrypt_cfb(const std::string& clearText, const std::string& _ke
 		for (int j = 0; j < AES_BLOCK_SIZE; j++)
 			vecCiphertext.push_back(outputText[j]);
 	}
-
+	*/
 	cipherText.clear();
 	cipherText.assign(vecCiphertext.begin(), vecCiphertext.end());
 
