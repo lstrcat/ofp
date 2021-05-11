@@ -36,13 +36,38 @@ unsigned char keytables[8][48] = {
 	0x12, 0x69, 0x89, 0x65, 0xA1, 0x32, 0xC7, 0x61, 0x36, 0xCC, 0x88, 0xC5, 0xDD, 0x94, 0xEE, 0x91
 };
 
-/*
-def mtk_shuffle2(key,keylength,input,inputlength):
-    for i in range(0,inputlength):
-      tmp = key[i % keylength] ^ input[i]
-      input[i]=((tmp & 0xF0) >> 4) | (16 * (tmp & 0xF))
-    return input
-*/
+
+//#pragma pack(1)
+
+struct Info1{
+	char prjname[46];
+	qword unknownval;
+	char reserved[4];
+	char cpu[7];
+	char flashtype[5];
+	word hdr2entries;
+	char prjinfo[32];
+	word crc;
+};
+
+
+String mtk_shuffle(String key, int keylength, String input, int inputlength)
+{
+	StringBuffer b;
+	b.SetLength(inputlength);
+	
+	for(int i=0; i<inputlength; i++)
+	{
+		unsigned char k = key[i%keylength];
+		unsigned char h = (((input[i]) & 0xF0) >> 4) | (16 * ((input[i]) & 0xF));
+		
+		b[i] = k ^ h;
+	}
+	
+	String r(b);
+	DUMPHEX(r);
+	return r;
+}
 
 String mtk_shuffle2(String key, int keylength, String input, int inputlength)
 {
@@ -112,12 +137,22 @@ bool brutekey(std::string encdata, std::string& sKey, std::string& sIv)
 	return false;
 }
 
+String cleancstring(String input)
+{
+	DUMPHEX(input);
+	input.Replace("\00","");
+    return input;
+}
+
 void decfile(String fn)
 {
 	FileIn in(fn);
 	if(in)
 	{
+		char* hdrkey = "geyixue";
 		int64 filesize = in.GetSize();
+		int hdrlength = 0x6c;
+		
 		while(!in.IsEof())
 		{
 			char b[16] = {0};
@@ -127,6 +162,21 @@ void decfile(String fn)
 			if(!brutekey(std::string(b,16),aeskey,aesiv))
 				break;
 			
+			in.Seek(filesize - hdrlength);
+			
+			char b_hdr[0x6c] = {0};
+			in.Get(b_hdr,hdrlength);
+			LOGHEXDUMP(b_hdr,hdrlength);
+			
+			String hdr = mtk_shuffle(hdrkey, strlen(hdrkey), b_hdr, hdrlength);
+			Info1* pInfo = (Info1*)~hdr;
+			LOGHEXDUMP(~hdr,hdrlength);
+			
+			String prjname(pInfo->prjname);	
+			String prjinfo(pInfo->prjinfo);
+			String cpu(pInfo->cpu);
+			String flashtype(pInfo->flashtype);
+						
 		}
 	}
 }

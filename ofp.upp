@@ -6,6 +6,7 @@ file
 	aes readonly separator,
 	ofp.h,
 	mtk_dec.cpp,
+	icon.rc,
 	main.cpp,
 	ofp.lay;
 

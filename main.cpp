@@ -4,7 +4,7 @@ void decfile(String fn);
 
 ofp::ofp()
 {
-	CtrlLayout(*this, "Window title");
+	CtrlLayout(*this, t_("Window title"));
 	
 	line.NullText(t_("Choose Oppo/Realme OFP file"));
 	btn <<= THISBACK(onOpen);
